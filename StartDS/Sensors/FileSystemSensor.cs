@@ -119,7 +119,7 @@ namespace StartDS.Sensors
             var text = new Field<string>("text");
             var hash = new Field<string>("hash");
             text[message] = messageText;
-            hash[message] = Tracked.WithString(_messageName).Hash();
+            hash[message] = Tracked.WithString(_channelName).Hash();
             return message;
         }
     }

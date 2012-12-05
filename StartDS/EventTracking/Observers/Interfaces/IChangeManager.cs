@@ -4,8 +4,8 @@ namespace StartDS.EventTracking.Observers.Interfaces
 {
     public interface IChangeManager
     {
-        void Register(ISubject subject, IObserver observer);
-        void Unregister(ISubject subject, IObserver observer);
-        void Notify(ISubject subject, ITracked tracked);
+        void Register(ITracked tracked, IObserver observer);
+        void Unregister(ITracked tracked, IObserver observer);
+        void Notify(ITracked tracked);
     }
 }

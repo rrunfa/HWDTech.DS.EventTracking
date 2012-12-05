@@ -10,6 +10,7 @@ namespace StartDS.EventTracking.MessageChains
     {
         private readonly List<ITracked> _trackedChainAtList = new List<ITracked>();
         private int _count = 0;
+        private readonly object _thisLock = new object();
 
         public Action ReadyBlock { get; set; }
 
@@ -25,17 +26,27 @@ namespace StartDS.EventTracking.MessageChains
             return this;
         }
 
-        public void Update(ISubject subject, ITracked tracked)
+        public void Initialize(IChangeManager changeManager)
         {
-            if (_trackedChainAtList[_count].Hash() == tracked.Hash())
+            var firstTracked = _trackedChainAtList[0];
+            firstTracked.Attach(this);
+        }
+
+        public void Update(ITracked tracked)
+        {
+            lock (_thisLock)
             {
-                _count++;
-            }
-            
-            if (_count == _trackedChainAtList.Count)
-            {
-                ReadyBlock.Invoke();
-                _count = 0;
+                if (_trackedChainAtList[_count].Hash() == tracked.Hash())
+                    _count++;
+                
+                if (_count == _trackedChainAtList.Count)
+                {
+                    _count = 0;
+                    ReadyBlock.Invoke();
+                }
+                tracked.Detach(this);
+                var nextTracked = _trackedChainAtList[_count];
+                nextTracked.Attach(this);
             }
         }
 
@@ -48,6 +59,12 @@ namespace StartDS.EventTracking.MessageChains
             }
             clone.ReadyBlock = ReadyBlock;
             return clone;
+        }
+
+        public void Dispose()
+        {
+            var nextTracked = _trackedChainAtList[_count];
+            nextTracked.Detach(this);
         }
     }
 }

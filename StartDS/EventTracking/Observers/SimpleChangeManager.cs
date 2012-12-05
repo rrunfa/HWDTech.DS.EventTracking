@@ -6,28 +6,39 @@ namespace StartDS.EventTracking.Observers
 {
     public class SimpleChangeManager : IChangeManager
     {
-        //private readonly Dictionary<IObserver, ISubject> _map = new Dictionary<IObserver, ISubject>();
-        private  readonly HashSet<KeyValuePair<IObserver, ISubject>>  _map = new HashSet<KeyValuePair<IObserver, ISubject>>();
+        private readonly HashSet<KeyValuePair<IObserver, ITracked>> _map = new HashSet<KeyValuePair<IObserver, ITracked>>();
 
-        public void Register(ISubject subject, IObserver observer)
-        {
-            _map.Add(new KeyValuePair<IObserver, ISubject>(observer, subject));
-        }
+        private static IChangeManager _instance;
 
-        public void Unregister(ISubject subject, IObserver observer)
+        public static IChangeManager Instance
         {
-            _map.Remove(new KeyValuePair<IObserver, ISubject>(observer, subject));
-        }
-
-        public void Notify(ISubject subject, ITracked tracked)
-        {
-            foreach (KeyValuePair<IObserver, ISubject> keyValuePair in _map)
+            get
             {
-                var currentSubject = keyValuePair.Value;
-                if (currentSubject == subject)
+                if (_instance == null)
+                    _instance = new SimpleChangeManager();
+                return _instance;
+            }
+        }
+
+        public void Register(ITracked tracked, IObserver observer)
+        {
+            _map.Add(new KeyValuePair<IObserver, ITracked>(observer, tracked));
+        }
+
+        public void Unregister(ITracked tracked, IObserver observer)
+        {
+            _map.Remove(new KeyValuePair<IObserver, ITracked>(observer, tracked));
+        }
+
+        public void Notify(ITracked tracked)
+        {
+            foreach (var keyValuePair in _map)
+            {
+                var currentTracked = keyValuePair.Value;
+                if (currentTracked.Hash() == tracked.Hash())
                 {
                     var currentObserver = keyValuePair.Key;
-                    currentObserver.Update(currentSubject, tracked);
+                    currentObserver.Update(tracked);
                 }
             }
         }

@@ -1,6 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using StartDS.EventTracking.Interfaces;
+using StartDS.EventTracking.Observers;
+using StartDS.EventTracking.Observers.Interfaces;
 
 namespace StartDS.EventTracking.EventTrackers
 {
@@ -21,6 +23,21 @@ namespace StartDS.EventTracking.EventTrackers
         public string Hash()
         {
             return _hash;
+        }
+
+        public void Attach(IObserver observer)
+        {
+            SimpleChangeManager.Instance.Register(this, observer);
+        }
+
+        public void Detach(IObserver observer)
+        {
+            SimpleChangeManager.Instance.Unregister(this, observer);
+        }
+
+        public void Notify()
+        {
+            SimpleChangeManager.Instance.Notify(this);
         }
 
         private static string CalculateMd5Hash(string input)
