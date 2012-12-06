@@ -89,8 +89,8 @@
     <Compile Include="EventTracking\MessageChains\Interfaces\ITrackedChain.cs" />
     <Compile Include="EventTracking\MessageChains\SimpleChain.cs" />
     <Compile Include="EventTracking\EventTrackers\EventTracker.cs" />
-    <Compile Include="EventTracking\EventTrackers\FileSystemEventTracker.cs" />
-    <Compile Include="EventTracking\EventTrackers\FileSystemEventTrackerFactory.cs" />
+    <Compile Include="EventTracking\EventTrackers\SimpleEventTracker.cs" />
+    <Compile Include="EventTracking\EventTrackers\SimpleEventTrackerFactory.cs" />
     <Compile Include="EventTracking\EventTrackerStore.cs" />
     <Compile Include="EventTracking\Observers\SimpleChangeManager.cs" />
     <Compile Include="EventTracking\Observers\Interfaces\IChangeManager.cs" />

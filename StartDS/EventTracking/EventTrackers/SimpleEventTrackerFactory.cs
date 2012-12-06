@@ -3,11 +3,11 @@ using StartDS.EventTracking.Observers;
 
 namespace StartDS.EventTracking.EventTrackers
 {
-    public class FileSystemEventTrackerFactory : IEventTrackerFactory
+    public class SimpleEventTrackerFactory : IEventTrackerFactory
     {
         public IEventTracker Create()
         {
-            return new FileSystemEventTracker(new SimpleChangeManager());
+            return new SimpleEventTracker(new SimpleChangeManager());
         }
     }
 }

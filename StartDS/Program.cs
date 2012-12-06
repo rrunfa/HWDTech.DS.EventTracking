@@ -15,10 +15,11 @@ namespace StartDS
             using (var node = new Node(new Uri("http://localhost:9000/in")))
             {
                 node.Start();
-                var store = new EventTrackerStore();
-                var filesystemTracker = EventTracker<FileSystemEventTrackerFactory>.Create();
                 
-                store.Add(filesystemTracker, node);
+                var simpleTracker = EventTracker<SimpleEventTrackerFactory>.Create();
+
+                var store = new EventTrackerStore();
+                store.Add(simpleTracker, node);
 
                 var fileSystemSensor = FileSystemSensor.CreateWithPath("C:\\work");
                 var processorLoadingSensor = ProcessorLoadingSensor.Create();
@@ -34,8 +35,8 @@ namespace StartDS
                 processorLoadingChain.Add(processorLoadingTrack).Add(processorLoadingTrack);
                 processorLoadingChain.ReadyBlock = () => Console.WriteLine("ProcessorLoadingChain Ready!");
 
-                filesystemTracker.AddChain(fileSystemChain);
-                filesystemTracker.AddChain(processorLoadingChain);
+                simpleTracker.AddChain(fileSystemChain);
+                simpleTracker.AddChain(processorLoadingChain);
 
                 fileSystemSensor.Start();
                 processorLoadingSensor.Start();

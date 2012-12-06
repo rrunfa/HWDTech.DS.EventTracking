@@ -2,8 +2,8 @@
 {
     public interface ISubject
     {
-        void Attach(IObserver observer);
-        void Detach(IObserver observer);
-        void Notify();
+        void Attach(IObserver observer, IChangeManager changeManager);
+        void Detach(IObserver observer, IChangeManager changeManager);
+        void Notify(IChangeManager changeManager);
     }
 }

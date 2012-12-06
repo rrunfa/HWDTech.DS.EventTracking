@@ -5,18 +5,24 @@ using HWdTech.DS.v30.Channels;
 using HWdTech.DS.v30.PropertyObjects;
 using StartDS.EventTracking.Interfaces;
 using StartDS.EventTracking.MessageChains.Interfaces;
+using StartDS.EventTracking.Observers;
 using StartDS.EventTracking.Observers.Interfaces;
 
 namespace StartDS.EventTracking.EventTrackers
 {
-    public class FileSystemEventTracker : IEventTracker
+    public class SimpleEventTracker : IEventTracker
     {
         private readonly IChangeManager _changeManager;
         private readonly List<ITrackedChain> _trackedChains = new List<ITrackedChain>();
 
-        public FileSystemEventTracker(IChangeManager changeManager)
+        public SimpleEventTracker(IChangeManager changeManager)
         {
             _changeManager = changeManager;
+        }
+
+        public SimpleEventTracker()
+        {
+            _changeManager = new SimpleChangeManager();
         }
 
         public void Track(ITracked objectToTrack)
@@ -51,7 +57,7 @@ namespace StartDS.EventTracking.EventTrackers
             Console.WriteLine("Change message: " + text[message]);
             if (message is Message)
             {
-                Tracked.WithHash(hash[message]).Notify();
+                Tracked.WithHash(hash[message]).Notify(_changeManager);
             }
         }
 
@@ -64,7 +70,7 @@ namespace StartDS.EventTracking.EventTrackers
             Console.WriteLine("Change message: " + text[message]);
             if (message is Message)
             {
-                Tracked.WithHash(hash[message]).Notify();
+                Tracked.WithHash(hash[message]).Notify(_changeManager);
             }
         }
     }

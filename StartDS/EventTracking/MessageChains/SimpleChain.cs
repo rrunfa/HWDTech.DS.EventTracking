@@ -11,6 +11,7 @@ namespace StartDS.EventTracking.MessageChains
         private readonly List<ITracked> _trackedChainAtList = new List<ITracked>();
         private int _count = 0;
         private readonly object _thisLock = new object();
+        private IChangeManager _changeManager;
 
         public Action ReadyBlock { get; set; }
 
@@ -29,7 +30,8 @@ namespace StartDS.EventTracking.MessageChains
         public void Initialize(IChangeManager changeManager)
         {
             var firstTracked = _trackedChainAtList[0];
-            firstTracked.Attach(this);
+            _changeManager = changeManager;
+            firstTracked.Attach(this, _changeManager);
         }
 
         public void Update(ITracked tracked)
@@ -44,9 +46,9 @@ namespace StartDS.EventTracking.MessageChains
                     _count = 0;
                     ReadyBlock.Invoke();
                 }
-                tracked.Detach(this);
+                tracked.Detach(this, _changeManager);
                 var nextTracked = _trackedChainAtList[_count];
-                nextTracked.Attach(this);
+                nextTracked.Attach(this, _changeManager);
             }
         }
 
@@ -64,7 +66,7 @@ namespace StartDS.EventTracking.MessageChains
         public void Dispose()
         {
             var nextTracked = _trackedChainAtList[_count];
-            nextTracked.Detach(this);
+            nextTracked.Detach(this, _changeManager);
         }
     }
 }

@@ -8,18 +8,6 @@ namespace StartDS.EventTracking.Observers
     {
         private readonly HashSet<KeyValuePair<IObserver, ITracked>> _map = new HashSet<KeyValuePair<IObserver, ITracked>>();
 
-        private static IChangeManager _instance;
-
-        public static IChangeManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new SimpleChangeManager();
-                return _instance;
-            }
-        }
-
         public void Register(ITracked tracked, IObserver observer)
         {
             _map.Add(new KeyValuePair<IObserver, ITracked>(observer, tracked));
