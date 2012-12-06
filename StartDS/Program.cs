@@ -21,17 +21,24 @@ namespace StartDS
                 store.Add(filesystemTracker, node);
 
                 var fileSystemSensor = FileSystemSensor.CreateWithPath("C:\\work");
+                var processorLoadingSensor = ProcessorLoadingSensor.Create();
 
-                var toTrack = fileSystemSensor.Channel();
+                var fileSystemTrack = fileSystemSensor.Channel();
+                var processorLoadingTrack = processorLoadingSensor.Channel();
 
-                var simpleChain = new SimpleChain();
-                simpleChain.Add(toTrack).Add(toTrack).Add(toTrack);
-                simpleChain.ReadyBlock = () => Console.WriteLine("TestSimpleChain Ready!");
+                var fileSystemChain = new SimpleChain();
+                fileSystemChain.Add(fileSystemTrack).Add(fileSystemTrack).Add(fileSystemTrack);
+                fileSystemChain.ReadyBlock = () => Console.WriteLine("FileSystemChain Ready!");
 
-                filesystemTracker.AddChain(simpleChain);
-                filesystemTracker.AddChain((ITrackedChain)simpleChain.Clone());
+                var processorLoadingChain = new SimpleChain();
+                processorLoadingChain.Add(processorLoadingTrack).Add(processorLoadingTrack);
+                processorLoadingChain.ReadyBlock = () => Console.WriteLine("ProcessorLoadingChain Ready!");
+
+                filesystemTracker.AddChain(fileSystemChain);
+                filesystemTracker.AddChain(processorLoadingChain);
 
                 fileSystemSensor.Start();
+                processorLoadingSensor.Start();
 
                 Console.ReadLine();
             }

@@ -106,14 +106,14 @@ namespace StartDS.Sensors
 
         private void SendMessage(string messageText)
         {
-            var message = prepareMessageWithText(messageText);
+            var message = PrepareMessageWithText(messageText);
             var channel = Singleton<DIFactory>.Instance.Create<IChannel>(_channelName);
             var builder = Singleton<DIFactory>.Instance.Create<ObjectBuilder>();
             builder.Message().To(channel).Make(message);
             MessageBus.Send(message);
         }
 
-        private IMessage prepareMessageWithText(string messageText)
+        private IMessage PrepareMessageWithText(string messageText)
         {
             var message = Singleton<DIFactory>.Instance.Create<IMessage>();
             var text = new Field<string>("text");

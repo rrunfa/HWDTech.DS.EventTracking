@@ -43,7 +43,20 @@ namespace StartDS.EventTracking.EventTrackers
         }
 
         [ChannelEndpointHanlder("FileSystemSensorChannel")]
-        public void ChangeHandle(IMessage message)
+        public void ChangeHandle1(IMessage message)
+        {
+            var text = new Field<string>("text");
+            var hash = new Field<string>("hash");
+
+            Console.WriteLine("Change message: " + text[message]);
+            if (message is Message)
+            {
+                Tracked.WithHash(hash[message]).Notify();
+            }
+        }
+
+        [ChannelEndpointHanlder("ProcessorLoadingSensorChannel")]
+        public void ChangeHandle2(IMessage message)
         {
             var text = new Field<string>("text");
             var hash = new Field<string>("hash");
