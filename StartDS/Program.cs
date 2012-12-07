@@ -3,7 +3,6 @@ using System;
 using StartDS.EventTracking;
 using StartDS.EventTracking.EventTrackers;
 using StartDS.EventTracking.MessageChains;
-using StartDS.EventTracking.MessageChains.Interfaces;
 using StartDS.Sensors;
 
 namespace StartDS
@@ -35,8 +34,14 @@ namespace StartDS
                 processorLoadingChain.Add(processorLoadingTrack).Add(processorLoadingTrack);
                 processorLoadingChain.ReadyBlock = () => Console.WriteLine("ProcessorLoadingChain Ready!");
 
+                var multiChain = new SimpleChain();
+                multiChain.Add(processorLoadingTrack).Add(fileSystemTrack).Add(processorLoadingTrack);
+                multiChain.ReadyBlock = () => Console.WriteLine("MultiChain Ready!");
+
                 simpleTracker.AddChain(fileSystemChain);
-                simpleTracker.AddChain(processorLoadingChain);
+                //simpleTracker.AddChain(processorLoadingChain);
+
+                simpleTracker.AddChain(multiChain);
 
                 fileSystemSensor.Start();
                 processorLoadingSensor.Start();

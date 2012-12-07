@@ -84,7 +84,7 @@ namespace StartDS.Sensors
                         Thread.Sleep(50);
                     }
                 }
-                Thread.Sleep(2000);
+                Thread.Sleep(500);
             }
         }
 

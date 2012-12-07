@@ -54,7 +54,7 @@ namespace StartDS.EventTracking.EventTrackers
             var text = new Field<string>("text");
             var hash = new Field<string>("hash");
 
-            Console.WriteLine("Change message: " + text[message]);
+            //Console.WriteLine("Change message: " + text[message]);
             if (message is Message)
             {
                 Tracked.WithHash(hash[message]).Notify(_changeManager);
@@ -67,7 +67,7 @@ namespace StartDS.EventTracking.EventTrackers
             var text = new Field<string>("text");
             var hash = new Field<string>("hash");
 
-            Console.WriteLine("Change message: " + text[message]);
+            //Console.WriteLine("Change message: " + text[message]);
             if (message is Message)
             {
                 Tracked.WithHash(hash[message]).Notify(_changeManager);
