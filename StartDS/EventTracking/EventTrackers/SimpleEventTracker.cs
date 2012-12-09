@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HWdTech.DS.v30;
 using HWdTech.DS.v30.Channels;
-using HWdTech.DS.v30.PropertyObjects;
 using StartDS.EventTracking.Interfaces;
 using StartDS.EventTracking.MessageChains.Interfaces;
 using StartDS.EventTracking.Observers;
@@ -12,66 +10,36 @@ namespace StartDS.EventTracking.EventTrackers
 {
     public class SimpleEventTracker : IEventTracker
     {
-        private readonly IChangeManager _changeManager;
-        private readonly List<ITrackedChain> _trackedChains = new List<ITrackedChain>();
+        private readonly List<ITokenChain> _trackedChains = new List<ITokenChain>();
+        private readonly NotifyManager _notifyManager;
 
         public SimpleEventTracker(IChangeManager changeManager)
         {
-            _changeManager = changeManager;
+            _notifyManager = new NotifyManager(changeManager);
         }
 
         public SimpleEventTracker()
         {
-            _changeManager = new SimpleChangeManager();
+            _notifyManager = new NotifyManager(new SimpleChangeManager());
         }
 
-        public void Track(ITracked objectToTrack)
+        public void AddChain(ITokenChain tokenChain)
         {
-            Console.WriteLine("Start Tracking Channel...");
+            _trackedChains.Add(tokenChain);
+            _notifyManager.Attach(tokenChain);
         }
 
-        public void Untrack(ITracked trackedObject)
+        public void RemoveChain(ITokenChain tokenChain)
         {
-            Console.WriteLine("Stop Tracking Channel...");
+            _trackedChains.Remove(tokenChain);
+            _notifyManager.Detach(tokenChain);
         }
 
-        public void AddChain(ITrackedChain trackedChain)
+        [ChannelEndpointHanlder("TrackersChannel")]
+        public void ChangeHandle(IMessage message)
         {
-            _trackedChains.Add(trackedChain);
-            trackedChain.Initialize(_changeManager);
-            //TODO: Track all Channels from Chain
-        }
-
-        public void RemoveChain(ITrackedChain trackedChain)
-        {
-            _trackedChains.Remove(trackedChain);
-            trackedChain.Dispose();
-        }
-
-        [ChannelEndpointHanlder("FileSystemSensorChannel")]
-        public void ChangeHandle1(IMessage message)
-        {
-            var text = new Field<string>("text");
-            var hash = new Field<string>("hash");
-
-            //Console.WriteLine("Change message: " + text[message]);
-            if (message is Message)
-            {
-                Tracked.WithHash(hash[message]).Notify(_changeManager);
-            }
-        }
-
-        [ChannelEndpointHanlder("ProcessorLoadingSensorChannel")]
-        public void ChangeHandle2(IMessage message)
-        {
-            var text = new Field<string>("text");
-            var hash = new Field<string>("hash");
-
-            //Console.WriteLine("Change message: " + text[message]);
-            if (message is Message)
-            {
-                Tracked.WithHash(hash[message]).Notify(_changeManager);
-            }
+            IToken token = Token.WithMessage(message);
+            _notifyManager.Notify(token);
         }
     }
 }

@@ -7,39 +7,39 @@ namespace StartDS.EventTracking.Observers
 {
     public class SimpleChangeManager : IChangeManager
     {
-        private readonly Dictionary<string, List<IObserver>> _map =
-            new Dictionary<string, List<IObserver>>();
+        private readonly Dictionary<ISubject, List<IObserver>> _map =
+            new Dictionary<ISubject, List<IObserver>>();
 
-        private static object _thisLock = new object();
+        private static readonly object _thisLock = new object();
 
-        public void Register(ITracked tracked, IObserver observer)
+        public void Register(ISubject subject, IObserver observer)
         {
             lock (_thisLock)
             {
                 try
                 {
-                    var observers = _map[tracked.Hash()];
+                    var observers = _map[subject];
                     observers.Add(observer);
                 }
                 catch (Exception)
                 {
                     var observers = new List<IObserver>(1) {observer};
-                    _map.Add(tracked.Hash(), observers);
+                    _map.Add(subject, observers);
                 }
             }
             
         }
 
-        public void Unregister(ITracked tracked, IObserver observer)
+        public void Unregister(ISubject subject, IObserver observer)
         {
             lock (_thisLock)
             {
                 try
                 {
-                    var observers = _map[tracked.Hash()];
+                    var observers = _map[subject];
                     observers.Remove(observer);
                     if (observers.Count == 0)
-                        _map.Remove(tracked.Hash());
+                        _map.Remove(subject);
                 }
                 catch (Exception e)
                 {
@@ -48,13 +48,13 @@ namespace StartDS.EventTracking.Observers
             }
         }
 
-        public void Notify(ITracked tracked)
+        public void Notify(ISubject subject, IToken token)
         {
             lock (_thisLock)
             {
                 try
                 {
-                    _map[tracked.Hash()].ForEach(o => o.Update(tracked));
+                    _map[subject].ForEach(o => o.Update(token));
                 }
                 catch (Exception e)
                 {

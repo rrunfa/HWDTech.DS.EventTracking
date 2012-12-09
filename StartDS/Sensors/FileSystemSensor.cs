@@ -13,9 +13,9 @@ namespace StartDS.Sensors
     public class FileSystemSensor : ISensor
     {
         private readonly string _path;
+        private readonly string _type;
         private FileSystemWatcher _fileSystemWatcher;
-        private static readonly string _messageName = typeof(FileSystemSensor).Name + "Message";
-        private static readonly string _channelName = typeof(FileSystemSensor).Name + "Channel";
+        private static string _channelName;
         private readonly object _thisLock = new object();
 
         public void Start()
@@ -28,24 +28,21 @@ namespace StartDS.Sensors
             StopWatching();
         }
 
-        public ITracked Channel()
+        public IToken Token()
         {
-            return Tracked.WithString(_channelName);
+            return new Token(null, _type);
         }
 
-        public ITracked Message()
+        public static FileSystemSensor CreateWithPathAndType(string path, string type)
         {
-            return Tracked.WithString(_messageName);
+            return new FileSystemSensor(path, type);
         }
 
-        public static FileSystemSensor CreateWithPath(string path)
-        {
-            return new FileSystemSensor(path);
-        }
-
-        private FileSystemSensor(string path)
+        private FileSystemSensor(string path, string type)
         {
             _path = path;
+            _type = type;
+            _channelName = "TrackersChannel";
         }
 
         private void StartWatching()
@@ -116,11 +113,8 @@ namespace StartDS.Sensors
         private IMessage PrepareMessageWithText(string messageText)
         {
             var message = Singleton<DIFactory>.Instance.Create<IMessage>();
-            var text = new Field<string>("text");
-            var hash = new Field<string>("hash");
-            text[message] = messageText;
-            hash[message] = Tracked.WithString(_channelName).Hash();
-            return message;
+            IToken token = new Token(messageText, _type);
+            return token.WrapMessage(message);
         }
     }
 }

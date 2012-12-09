@@ -7,7 +7,6 @@ namespace StartDS.Sensors.Interfaces
     {
         void Start();
         void Stop();
-        ITracked Channel();
-        ITracked Message();
+        IToken Token();
     }
 }

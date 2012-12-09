@@ -4,6 +4,6 @@ namespace StartDS.EventTracking.Observers.Interfaces
 {
     public interface IObserver
     {
-        void Update(ITracked tracked);
+        void Update(IToken token);
     }
 }

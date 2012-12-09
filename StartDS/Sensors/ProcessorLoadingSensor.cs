@@ -16,7 +16,8 @@ namespace StartDS.Sensors
     public class ProcessorLoadingSensor : ISensor
     {
         private bool _isWathcing = false;
-        private static readonly string _channelName = typeof (ProcessorLoadingSensor).Name + "Channel";
+        private readonly string _type;
+        private readonly string _channelName;
 
         public void Start()
         {
@@ -28,19 +29,20 @@ namespace StartDS.Sensors
             _isWathcing = false;
         }
 
-        public ITracked Channel()
+        public IToken Token()
         {
-            return Tracked.WithString(_channelName);
+            return new Token(null, _type);
         }
 
-        public ITracked Message()
+        public static ProcessorLoadingSensor CreateWithType(string type)
         {
-            return null;
+            return new ProcessorLoadingSensor(type);
         }
 
-        public static ProcessorLoadingSensor Create()
+        private ProcessorLoadingSensor(string type)
         {
-            return new ProcessorLoadingSensor();
+            _type = type;
+            _channelName = "TrackersChannel";
         }
 
         private void StartWatching()
@@ -62,11 +64,8 @@ namespace StartDS.Sensors
         private IMessage PrepareMessageWithText(string messageText)
         {
             var message = Singleton<DIFactory>.Instance.Create<IMessage>();
-            var text = new Field<string>("text");
-            var hash = new Field<string>("hash");
-            text[message] = messageText;
-            hash[message] = Tracked.WithString(_channelName).Hash();
-            return message;
+            IToken token = new Token(messageText, _type);
+            return token.WrapMessage(message);
         }
 
         private void WathcingInThread()
@@ -80,7 +79,7 @@ namespace StartDS.Sensors
                     double coreLoading = performanceCounter.NextValue();
                     if (coreLoading > 50.0)
                     {
-                        SendMessage("Core " + coreNumber + "was loaded over 50 % (" + coreLoading + ")");
+                        SendMessage("Core " + coreNumber + " was loaded over 50 % (" + coreLoading + ")");
                         Thread.Sleep(50);
                     }
                 }

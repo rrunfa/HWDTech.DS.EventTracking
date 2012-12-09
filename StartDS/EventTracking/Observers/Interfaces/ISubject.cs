@@ -1,9 +1,11 @@
-﻿namespace StartDS.EventTracking.Observers.Interfaces
+﻿using StartDS.EventTracking.Interfaces;
+
+namespace StartDS.EventTracking.Observers.Interfaces
 {
     public interface ISubject
     {
-        void Attach(IObserver observer, IChangeManager changeManager);
-        void Detach(IObserver observer, IChangeManager changeManager);
-        void Notify(IChangeManager changeManager);
+        void Attach(IObserver observer);
+        void Detach(IObserver observer);
+        void Notify(IToken token);
     }
 }

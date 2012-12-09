@@ -5,9 +5,7 @@ namespace StartDS.EventTracking.Interfaces
 {
     public interface IEventTracker : IJob
     {
-        void Track(ITracked objectToTrack);
-        void Untrack(ITracked trackedObject);
-        void AddChain(ITrackedChain trackedChain);
-        void RemoveChain(ITrackedChain trackedChain);
+        void AddChain(ITokenChain tokenChain);
+        void RemoveChain(ITokenChain tokenChain);
     }
 }

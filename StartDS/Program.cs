@@ -20,11 +20,11 @@ namespace StartDS
                 var store = new EventTrackerStore();
                 store.Add(simpleTracker, node);
 
-                var fileSystemSensor = FileSystemSensor.CreateWithPath("C:\\work");
-                var processorLoadingSensor = ProcessorLoadingSensor.Create();
+                var fileSystemSensor = FileSystemSensor.CreateWithPathAndType("C:\\work", "FileSensorMessage");
+                var processorLoadingSensor = ProcessorLoadingSensor.CreateWithType("ProcessorMessage");
 
-                var fileSystemTrack = fileSystemSensor.Channel();
-                var processorLoadingTrack = processorLoadingSensor.Channel();
+                var fileSystemTrack = fileSystemSensor.Token();
+                var processorLoadingTrack = processorLoadingSensor.Token();
 
                 var fileSystemChain = new SimpleChain();
                 fileSystemChain.Add(fileSystemTrack).Add(fileSystemTrack).Add(fileSystemTrack);
@@ -39,7 +39,7 @@ namespace StartDS
                 multiChain.ReadyBlock = () => Console.WriteLine("MultiChain Ready!");
 
                 simpleTracker.AddChain(fileSystemChain);
-                //simpleTracker.AddChain(processorLoadingChain);
+                simpleTracker.AddChain(processorLoadingChain);
 
                 simpleTracker.AddChain(multiChain);
 
